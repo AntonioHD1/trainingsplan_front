@@ -45,6 +45,10 @@
           <div class="q-pa-md">
             Mitglied? <q-checkbox v-model="isMember" color="teal"></q-checkbox>
           </div>
+
+          <q-card-section class="column items-center">
+            <q-select v-model="gender" label="Geschlecht" style="margin-top: 10px;" :options="genders" emit-value map-options />
+          </q-card-section>
         </q-card-section>
 
         <q-card-actions class="column items-center" style="padding-bottom: 20px;">
@@ -56,14 +60,16 @@
     </q-page-container>
 
   </q-page>
+
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { createApp, ref } from 'vue';
   import axios from 'axios';
+  import { Notify } from 'quasar';
 
   defineOptions({
-    name: "NewMemberPage",
+    name: "NewMemberPage"
   });
 
   const firstname = ref('');
@@ -78,9 +84,11 @@
   const dtb_id = ref('');
   const skill = ref('');
   const isMember = ref(true);
+  const note = ref('');
+  const gender = ref('Männlich');
 
   const api = axios.create({
-    baseURL: 'http://localhost:8000/api',
+    baseURL: 'http://localhost:8080/api',
     headers: {
       'Content-Type': 'application/json'
     }
@@ -88,29 +96,69 @@
 
   const save = async () => {
     const data = {
-      firstname: firstname.value,
-      lastname: lastname.value,
-      contactperson: contactperson.value,
+      firstName: firstname.value,
+      lastName: lastname.value,
+      contactPerson: contactperson.value,
       ageGroup: ageGroup.value,
       email: email.value,
       phone: phone.value,
       street: street.value,
       houseNumber: houseNumber.value,
       city: city.value,
-      dtb_id: dtb_id.value,
+      dtb_id_nr: dtb_id.value,
       skill: skill.value,
-      isMember: isMember.value
+      isMember: isMember.value,
+      note: note.value
     }
-    console.log(data)
-    await api.post('/members', data)
-    .then(response => {
-      if (response.data == data) {
-        console.log('Member saved successfully');
+
+    if (data.firstName == '' || data.lastName == '') {
+      Notify.create({
+        message: 'Es müssen Vor- und Nachnamen angegeben werden',
+        color: 'red',
+        textColor: 'white',
+        icon: 'warning',
+        timeout: 2000
+      });
+
+      return;
+    }
+
+    await api.post('/clients', data).then(response => {
+      if (response.data.firstName == data.firstName) {
+        Notify.create({
+          message: 'Mitglied erfolgreich gespeichert',
+          color: 'green',
+          icon: 'check'
+        });
+      } else {
+        Notify.create({
+          message: 'Fehler beim Speichern des Mitglieds',
+          color: 'red',
+          icon: 'warning',
+        });
       }
-    })
-    .catch(error => {
-      console.log(error);
+    }).catch(error => {
+      Notify.create({
+          message: 'Fehler beim Speichern des Mitglieds',
+          color: 'red',
+          icon: 'warning',
+        });
     });
   }
+
+  const genders = [
+    {
+      label: 'Männlich',
+      value: 'Männlich'
+    },
+    {
+      label: 'Weiblich',
+      value: 'Weiblich'
+    },
+    {
+      label: 'Divers',
+      value: 'Divers'
+    }
+  ]
 
 </script>

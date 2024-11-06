@@ -5,6 +5,7 @@
   "productName": "Trainingsplan Tool",
   "author": "Anton <anton@wiederhold.at>",
   "private": true,
+  "proxy":"http://localhost:8080/",
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",

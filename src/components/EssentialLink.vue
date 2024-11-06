@@ -27,7 +27,7 @@ defineOptions({
 const props = defineProps({
   title: {
     type: String,
-    required: true
+    required: ''
   },
 
   caption: {
@@ -41,6 +41,16 @@ const props = defineProps({
   },
 
   icon: {
+    type: String,
+    default: ''
+  },
+
+  name: {
+    type: String,
+    default: ''
+  },
+
+  id: {
     type: String,
     default: ''
   }
