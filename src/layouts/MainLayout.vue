@@ -11,48 +11,12 @@
           Trainingsplan Tool für OlePistole
         </q-toolbar-title>
       </q-toolbar>
-
-      <q-tabs align="left">
-        <q-route-tab to="/" label="Startseite" @click="changeSite('home')" />
-
-        <q-route-tab
-          to="/plan"
-          label="Trainingsplan"
-          @click="changeSite('plan')"
-        />
-        <q-route-tab
-          to="/training"
-          label="Stunden"
-          @click="changeSite('training')"
-        />
-        <q-route-tab
-          to="/member/:id=0"
-          label="Mitglieder"
-          @click="changeSite('member')"
-        />
-
-        <q-route-tab to="/coach" label="Trainer" @click="changeSite('coach')" />
-
-        <q-route-tab
-          to="/team"
-          label="Mannschaften"
-          @click="changeSite('team')"
-        />
-
-        <q-route-tab to="/court" label="Plätze" @click="changeSite('court')" />
-      </q-tabs>
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" elevated>
       <EssentialLink v-for="link in linkList" :key="link.title" v-bind="link" />
 
-      <q-input bottom-slots v-model="inputValue" :label="inputLabel" style="padding-left: 10px; padding-right: 10px">
-        <template v-slot:append>
-          <q-icon name="search" @click="search" class="cursor-pointer" />
-        </template>
-      </q-input>
-
-      <EssentialLink v-for="link in resultList" :key="link.title" v-bind="link" @click="callElement(link.name, link.id)" />
+      
     </q-drawer>
 
     <q-page-container>
@@ -69,10 +33,38 @@ import { Notify } from 'quasar';
 import { useRouter } from 'vue-router';
 
 const leftDrawerOpen = ref(false);
-const inputLabel = ref("Suchen");
-const inputValue = ref("");
-const linkList = ref([]);
-const resultList = ref([]);
+const linkList = ref([
+  {
+    title: "Home",
+    caption: "Home",
+    icon: "home",
+    link: "/",
+  },
+  {
+    title: "Mitglieder",
+    caption: "Mitglieder",
+    icon: "people",
+    link: "/members",
+  },
+  {
+    title: "Trainer",
+    caption: "Trainer",
+    icon: "person",
+    link: "/coach",
+  },
+  {
+    title: "Teams",
+    caption: "Teams",
+    icon: "people",
+    link: "/team",
+  },
+  {
+    title: "Plan",
+    caption: "Plan",
+    icon: "calendar_today",
+    link: "/plan",
+  }
+]);
 
 const router = useRouter();
 
@@ -84,38 +76,4 @@ const api = axios.create({
   baseURL: "http://localhost:8080/api",
 });
 
-const callElement = (name, id) => {
-  router.push({ name: name, params: { id: id } });
-}
-
-const search = async () => {
-  if (inputValue.value != "") {
-    await api.get('/clients/search/' + inputValue.value).then(response => {
-      let responseList = new Set();
-      console.log(response.data);
-
-      for (let i = 0; i < response.data.length; i++) {
-        responseList.add({
-          title: response.data[i].firstName + " " + response.data[i].lastName,
-          icon: "person",
-          name: "member",
-          id: response.data[i].id
-        });
-      }
-
-      console.log(responseList)
-
-      resultList.value = responseList;
-    })
-    .catch(error => {
-      Notify.create({
-        message: "Fehler beim Suchen",
-        color: "red",
-        icon: "error"
-      })
-    })
-  } else {
-    resultList.value = []
-  }
-}
 </script>
