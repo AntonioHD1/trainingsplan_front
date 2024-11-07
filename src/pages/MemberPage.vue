@@ -104,15 +104,6 @@
     });
   }
 
-  if (this.$route.params.id == 0) {
-    Notify.create({
-      message: 'Wähle einen Mitglied aus',
-      color: 'green',
-      icon: 'search',
-    });
-  } else {
-    fetchData();
-  }
 </script>
 
 <style lang="css" scoped>
